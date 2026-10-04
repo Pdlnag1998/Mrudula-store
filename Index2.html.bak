@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mrudula Store.in - Premium Electronics & Tech</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0f0c1b',
+              deep: '#1e1b2e',
+              purple: '#7b2cbf',
+              teal: '#00d2b5',
+              tealDark: '#00b39b',
+              accent: '#ff2a75'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Phosphor Icons & Google Fonts -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f0c1b; }
+    ::-webkit-scrollbar-thumb { background: #332d4f; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7b2cbf; }
+    .glass-card {
+      background: rgba(30, 27, 46, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .neon-border:focus-within, .neon-border-active {
+      border-color: #00d2b5;
+      box-shadow: 0 0 15px rgba(0, 210, 181, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-[#0f0c1b] text-slate-100">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div id="app" class="flex-1 flex flex-col min-h-screen">
+    
+    <!-- Top Announcement & Pincode Bar -->
+    <header class="bg-[#151226] border-b border-white/10 text-xs sm:text-sm py-2 px-4 sticky top-0 z-30 shadow-lg backdrop-blur-md bg-opacity-95">
+      <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+        
+        <!-- Pincode Location Selector Widget -->
+        <div class="flex items-center gap-2 text-slate-300 bg-[#25203b] px-3 py-1.5 rounded-full border border-slate-700/60 hover:border-brand-teal transition-all">
+          <i class="ph-bold ph-map-pin text-brand-teal text-base animate-bounce"></i>
+          <span class="text-xs text-slate-400 hidden sm:inline">Deliver to:</span>
+          <div class="flex items-center gap-2">
+            <span id="current-pincode-display" class="font-bold text-white tracking-wide">500001</span>
+            <span id="current-area-display" class="text-brand-teal font-medium text-xs max-w-[150px] sm:max-w-[220px] truncate">Hyderabad, Telangana</span>
+          </div>
+          <button onclick="openPincodeModal()" class="ml-1 text-xs text-brand-purple hover:text-brand-teal underline transition-colors font-semibold">
+            Change
+          </button>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs text-slate-300">
+          <span class="hidden md:flex items-center gap-1.5 text-emerald-400">
+            <i class="ph-bold ph-truck text-sm"></i> Express Delivery across 19,000+ Pin Codes
+          </span>
+          <button onclick="openReturnPolicyModal()" class="hover:text-brand-teal flex items-center gap-1 transition-colors">
+            <i class="ph-bold ph-arrow-counter-clockwise"></i> 7-Day Easy Return Policy
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Navigation Header -->
+    <nav class="bg-brand-deep/90 border-b border-white/10 py-3.5 px-4 sticky top-[41px] z-20 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        
+        <!-- Brand Logo -->
+        <a href="#" onclick="filterCategory('All')" class="flex items-center gap-2 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-purple to-brand-teal flex items-center justify-center text-white text-xl font-black shadow-lg shadow-brand-purple/30 group-hover:scale-105 transition-transform">
+            M
+          </div>
+          <div class="flex flex-col">
+            <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-brand-teal bg-clip-text text-transparent">
+              Mrudula<span class="text-brand-teal">Store.in</span>
+            </span>
+            <span class="text-[9px] text-slate-400 font-medium tracking-widest uppercase -mt-1">India's Tech Hub</span>
+          </div>
+        </a>
+
+        <!-- Search Bar with Live Recommendations -->
+        <div class="relative flex-1 max-w-xl mx-2 hidden sm:block">
+          <div class="relative flex items-center">
+            <input id="search-input" type="text" placeholder="Search laptops, smartphones, noise-canceling headphones..." 
+              oninput="handleSearchInput(event)" onfocus="showSearchDropdown()"
+              class="w-full bg-[#120f24] text-white pl-10 pr-10 py-2.5 rounded-full border border-slate-700 focus:outline-none focus:border-brand-teal text-sm transition-all shadow-inner">
+            <i class="ph-bold ph-magnifying-glass absolute left-3.5 text-slate-400 text-base"></i>
+            <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 text-slate-400 hover:text-white">
+              <i class="ph-bold ph-x-circle text-base"></i>
+            </button>
+          </div>
+
+          <!-- Live Search Dropdown -->
+          <div id="search-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#1a162b] border border-slate-700/80 rounded-2xl shadow-2xl z-50 overflow-hidden max-h-80 overflow-y-auto divide-y divide-slate-800">
+          </div>
+        </div>
+
+        <!-- Navigation Buttons & User Profile -->
+        <div class="flex items-center gap-2 sm:gap-4">
+          
+          <!-- Wishlist Button -->
+          <button onclick="handleWishlistClick()" class="relative p-2.5 rounded-full hover:bg-slate-800/60 text-slate-300 hover:text-white transition-all">
+            <i class="ph-bold ph-heart text-xl"></i>
+            <span id="wishlist-badge" class="hidden absolute -top-1 -right-1 bg-brand-accent text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#1e1b2e]">
+              0
+            </span>
+          </button>
+
+          <!-- Cart Button -->
+          <button onclick="toggleCartDrawer()" class="relative p-2.5 rounded-full bg-gradient-to-r from-brand-purple/20 to-brand-teal/20 border border-brand-teal/40 hover:border-brand-teal text-white transition-all flex items-center gap-2 px-4">
+            <i class="ph-bold ph-shopping-bag text-xl text-brand-teal"></i>
+            <span class="text-xs font-semibold hidden md:inline">Cart</span>
+            <span id="cart-count-badge" class="bg-brand-teal text-slate-950 font-extrabold text-xs px-2 py-0.5 rounded-full">
+              0
+            </span>
+          </button>
+
+          <!-- User Authentication Dropdown/Button -->
+          <div id="auth-section" class="relative">
+            <!-- Will be dynamically populated by JS (Login button OR User Profile Menu) -->
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Mobile Search Bar -->
+      <div class="mt-3 sm:hidden relative">
+        <input id="mobile-search-input" type="text" placeholder="Search gadgets..." 
+          oninput="handleSearchInput(event)"
+          class="w-full bg-[#120f24] text-white pl-9 pr-8 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-brand-teal text-xs">
+        <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+      </div>
+    </nav>
+
+    <!-- Category Pills Bar -->
+    <section class="bg-[#131022] border-b border-white/5 py-2.5 px-4 overflow-x-auto no-scrollbar">
+      <div class="max-w-7xl mx-auto flex items-center gap-2 min-w-max">
+        <button onclick="filterCategory('All')" class="cat-pill active-cat text-xs px-4 py-1.5 rounded-full font-medium transition-all bg-brand-purple text-white shadow-md">
+          <i class="ph-bold ph-[#squares-four] mr-1"></i> All Products
+        </button>
+        <button onclick="filterCategory('Mobiles')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-device-mobile mr-1"></i> Mobiles
+        </button>
+        <button onclick="filterCategory('Laptops')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-laptop mr-1"></i> Laptops
+        </button>
+        <button onclick="filterCategory('Audio')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-headphones mr-1"></i> Audio
+        </button>
+        <button onclick="filterCategory('Wearables')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-watch mr-1"></i> Wearables
+        </button>
+        <button onclick="filterCategory('Gaming')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-game-controller mr-1"></i> Gaming
+        </button>
+        <button onclick="filterCategory('Accessories')" class="cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all">
+          <i class="ph-bold ph-plug-charging mr-1"></i> Accessories
+        </button>
+      </div>
+    </section>
+
+    <!-- Hero Promotional Banner -->
+    <section class="max-w-7xl mx-auto px-4 pt-6 w-full">
+      <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-brand-deep via-purple-950 to-brand-deep border border-brand-purple/30 p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+        <div class="z-10 max-w-xl text-center md:text-left">
+          <span class="inline-flex items-center gap-1.5 bg-brand-teal/10 text-brand-teal font-semibold text-xs px-3 py-1 rounded-full border border-brand-teal/30 mb-3">
+            <i class="ph-bold ph-sparkle"></i> Festival Electronics Sale 2026
+          </span>
+          <h1 class="text-2xl sm:text-4xl font-black text-white leading-tight">
+            Next-Gen Tech, <br class="hidden sm:inline"><span class="bg-gradient-to-r from-brand-teal via-purple-300 to-pink-500 bg-clip-text text-transparent">Delivered to Your Doorstep</span>
+          </h1>
+          <p class="text-slate-300 text-xs sm:text-sm mt-2.5 leading-relaxed">
+            Instant pincode verification, verified buyers reviews, same-day dispatch & 100% genuine Indian warranty on top brands.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-3 justify-center md:justify-start">
+            <a href="#product-grid" class="bg-gradient-to-r from-brand-purple to-purple-700 hover:from-purple-600 hover:to-brand-purple text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2">
+              Explore Deals <i class="ph-bold ph-arrow-right"></i>
+            </a>
+            <button onclick="openPincodeModal()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+              <i class="ph-bold ph-map-pin-line text-brand-teal"></i> Check Pincode Coverage
+            </button>
+          </div>
+        </div>
+        
+        <div class="relative w-full md:w-auto flex justify-center">
+          <div class="w-56 h-56 sm:w-64 sm:h-64 rounded-2xl bg-gradient-to-tr from-brand-purple/40 to-brand-teal/20 p-2 border border-white/10 flex items-center justify-center relative shadow-2xl rotate-1 hover:rotate-0 transition-transform">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80" alt="Tech Banner" class="w-full h-full object-cover rounded-xl">
+            <div class="absolute -bottom-3 -left-3 bg-[#1e1b2e] border border-brand-teal/50 rounded-xl p-2.5 shadow-xl flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                ✓
+              </div>
+              <div>
+                <p class="text-[10px] text-slate-400 font-medium">Fast Pincode Delivery</p>
+                <p id="hero-pincode-est" class="text-xs font-bold text-white">2-4 Days Guaranteed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN PRODUCT SECTION -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      
+      <!-- Section Header & Filter Controls -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 id="section-title" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            Trending Electronics
+          </h2>
+          <p id="section-subtitle" class="text-slate-400 text-xs">
+            Showing all items with instant delivery status to <span id="active-pincode-sub" class="text-brand-teal font-semibold">500001</span>
+          </p>
+        </div>
+
+        <!-- Sort dropdown -->
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+          <label for="sort-select" class="whitespace-nowrap font-medium text-slate-400">Sort By:</label>
+          <select id="sort-select" onchange="handleSortChange(event)" class="bg-[#1a162b] text-white border border-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-teal">
+            <option value="featured">Featured</option>
+            <option value="low-high">Price: Low to High</option>
+            <option value="high-low">Price: High to Low</option>
+            <option value="rating">Customer Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Product Cards Grid -->
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- JS Dynamically Populates Cards -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-products" class="hidden text-center py-16 bg-[#161226] rounded-3xl border border-dashed border-slate-700 p-8">
+        <i class="ph-bold ph-magnifying-glass text-4xl text-slate-500 mb-3"></i>
+        <h3 class="text-lg font-bold text-white">No products found</h3>
+        <p class="text-xs text-slate-400 mt-1">Try clearing search terms or selecting a different category.</p>
+        <button onclick="filterCategory('All')" class="mt-4 text-xs bg-brand-purple hover:bg-purple-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+          Show All Products
+        </button>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#120e24] border-t border-white/10 pt-10 pb-6 px-4 text-slate-400 text-xs mt-auto">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <span class="font-bold text-lg text-white tracking-tight">Mrudula<span class="text-brand-teal">Store.in</span></span>
+          <p class="mt-2 text-slate-400 leading-relaxed">
+            India's ultimate destination for tech gadgets, gaming setups, and official brand electronics with nationwide verified postal coverage.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm mb-3">Customer Care</h4>
+          <ul class="space-y-2">
+            <li><button onclick="openReturnPolicyModal()" class="hover:text-brand-teal transition-colors">7-Day Return & Refund</button></li>
+            <li><button onclick="openPincodeModal()" class="hover:text-brand-teal transition-colors">Check Serviceable Pincodes</button></li>
+            <li><button onclick="handleProtectedAction(() => openOrdersModal())" class="hover:text-brand-teal transition-colors">Track Your Order</button></li>
+            <li><a href="#" class="hover:text-brand-teal transition-colors">Warranty Registration</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm mb-3">Popular Categories</h4>
+          <ul class="space-y-2">
+            <li><button onclick="filterCategory('Mobiles')" class="hover:text-brand-teal transition-colors">5G Smartphones</button></li>
+            <li><button onclick="filterCategory('Laptops')" class="hover:text-brand-teal transition-colors">Gaming Laptops</button></li>
+            <li><button onclick="filterCategory('Audio')" class="hover:text-brand-teal transition-colors">Wireless Earbuds</button></li>
+            <li><button onclick="filterCategory('Wearables')" class="hover:text-brand-teal transition-colors">Smartwatches</button></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-white text-sm mb-3">100% Safe Payments</h4>
+          <p class="mb-3">Accepting all Indian payment methods:</p>
+          <div class="flex flex-wrap gap-2 text-slate-200">
+            <span class="bg-[#1e1b2e] px-2.5 py-1 rounded border border-slate-700 text-[10px] font-bold">UPI / GPay / PhonePe</span>
+            <span class="bg-[#1e1b2e] px-2.5 py-1 rounded border border-slate-700 text-[10px] font-bold">Rupay / Visa Cards</span>
+            <span class="bg-[#1e1b2e] px-2.5 py-1 rounded border border-slate-700 text-[10px] font-bold">Cash on Delivery</span>
+          </div>
+        </div>
+      </div>
+      <div class="max-w-7xl mx-auto border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between text-[11px] gap-2">
+        <p>© 2026 MrudulaStore.in — All Rights Reserved. Integrated with Indian Post API & Firebase Realtime Store.</p>
+        <p class="text-slate-500">Built for speed, security & seamless shopping across India.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL: PINCODE SELECTOR & AREA LOOKUP -->
+  <div id="pincode-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#1a162b] border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      <button onclick="closePincodeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+        <i class="ph-bold ph-x text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-2xl bg-brand-teal/10 border border-brand-teal/30 text-brand-teal flex items-center justify-center text-2xl">
+          <i class="ph-bold ph-map-pin-line"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">Select Delivery Location</h3>
+          <p class="text-xs text-slate-400">Enter your 6-digit Indian PIN code to check exact delivery estimates</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Enter Postal Pincode</label>
+          <div class="relative flex items-center">
+            <input id="modal-pincode-input" type="text" maxlength="6" placeholder="e.g. 500001, 110001, 400001" 
+              class="w-full bg-[#100d21] text-white px-4 py-3 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-base font-mono tracking-widest uppercase">
+            <button onclick="checkPincodeFromModal()" class="absolute right-2 bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-brand-purple text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+              Verify
+            </button>
+          </div>
+          <p id="pincode-modal-status" class="text-xs mt-2 font-medium min-h-[1.25rem]"></p>
+        </div>
+
+        <!-- Detected Area Result Card -->
+        <div id="modal-pincode-result" class="hidden bg-[#221c38] p-3.5 rounded-2xl border border-slate-700">
+          <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
+            <i class="ph-bold ph-check-circle text-base"></i> Serviceable Location Identified
+          </div>
+          <p id="modal-detected-area" class="text-sm font-bold text-white">Guntur, Andhra Pradesh</p>
+          <p id="modal-detected-delivery" class="text-xs text-brand-teal mt-1">Est. Delivery: Wednesday, Oct 7</p>
+        </div>
+
+        <div class="border-t border-slate-800 pt-3">
+          <p class="text-[11px] text-slate-400 font-medium mb-2">Try quick sample pincodes:</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="setQuickPincode('500001')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-lg">500001 (Hyd)</button>
+            <button onclick="setQuickPincode('110001')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-lg">110001 (Delhi)</button>
+            <button onclick="setQuickPincode('400001')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-lg">400001 (Mumbai)</button>
+            <button onclick="setQuickPincode('560001')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-lg">560001 (Blr)</button>
+            <button onclick="setQuickPincode('522001')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1 rounded-lg">522001 (Guntur)</button>
+          </div>
+        </div>
+
+        <button onclick="applyPincodeSelection()" id="apply-pincode-btn" class="w-full bg-brand-teal hover:bg-brand-tealDark text-slate-950 font-bold text-sm py-3 rounded-xl transition-all shadow-lg shadow-brand-teal/20">
+          Apply & Save Location
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AUTHENTICATION (LOGIN / REGISTER) -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#1a162b] border border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+        <i class="ph-bold ph-x text-lg"></i>
+      </button>
+
+      <!-- Tabs Header -->
+      <div class="flex border-b border-slate-700 mb-6">
+        <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-center font-bold text-sm border-b-2 border-brand-teal text-brand-teal transition-all">
+          Sign In
+        </button>
+        <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-center font-bold text-sm text-slate-400 hover:text-slate-200 transition-all">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input id="login-email" type="email" required placeholder="name@example.com" 
+            class="w-full bg-[#100d21] text-white px-4 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input id="login-password" type="password" required placeholder="••••••••" 
+            class="w-full bg-[#100d21] text-white px-4 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <button type="submit" id="login-submit-btn" class="w-full bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-brand-purple text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
+          Sign In to MrudulaStore
+        </button>
+      </form>
+
+      <!-- Registration Form -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+          <input id="reg-name" type="text" required placeholder="e.g. Mrudula Sharma" 
+            class="w-full bg-[#100d21] text-white px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input id="reg-email" type="email" required placeholder="name@example.com" 
+            class="w-full bg-[#100d21] text-white px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Mobile Number (India +91)</label>
+          <input id="reg-phone" type="tel" required placeholder="9876543210" maxlength="10" 
+            class="w-full bg-[#100d21] text-white px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input id="reg-password" type="password" required minlength="6" placeholder="At least 6 characters" 
+            class="w-full bg-[#100d21] text-white px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-teal text-sm">
+        </div>
+        <button type="submit" id="register-submit-btn" class="w-full bg-brand-teal hover:bg-brand-tealDark text-slate-950 font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
+          Register & Create Database Profile
+        </button>
+      </form>
+
+      <p class="text-[11px] text-slate-400 text-center mt-4">
+        🔒 Secured by Firebase Auth & Firestore DB Encryption
+      </p>
+    </div>
+  </div>
+
+  <!-- MODAL: PRODUCT DETAIL & REVIEWS MODAL -->
+  <div id="product-detail-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div id="product-modal-content" class="bg-[#1a162b] border border-slate-700 rounded-3xl max-w-3xl w-full p-6 shadow-2xl relative my-8">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- MODAL: MY ORDERS DATABASE VIEW -->
+  <div id="orders-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#1a162b] border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-700">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="ph-bold ph-package text-brand-teal"></i> My Orders (Firestore Persistence)
+        </h3>
+        <button onclick="closeOrdersModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div id="orders-list-container" class="flex-1 overflow-y-auto py-4 space-y-4">
+        <!-- JS Populated Orders -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RETURN POLICY MODAL -->
+  <div id="return-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#1a162b] border border-slate-700 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button onclick="closeReturnPolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+        <i class="ph-bold ph-x text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-2xl bg-brand-purple/20 text-brand-purple flex items-center justify-center text-xl">
+          <i class="ph-bold ph-shield-check"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">7-Day Easy Return & Replacement</h3>
+          <p class="text-xs text-slate-400">Hassle-free protection for every Indian buyer</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed bg-[#120f24] p-4 rounded-2xl border border-slate-800">
+        <div class="flex items-start gap-2">
+          <i class="ph-bold ph-check-circle text-brand-teal text-base shrink-0 mt-0.5"></i>
+          <p><strong class="text-white">7 Days Replacement Window:</strong> If product is defective, damaged, or wrong item received.</p>
+        </div>
+        <div class="flex items-start gap-2">
+          <i class="ph-bold ph-video-camera text-brand-purple text-base shrink-0 mt-0.5"></i>
+          <p><strong class="text-white">Unboxing Video Requirement:</strong> Please record a brief video while opening the outer parcel for instant return approval.</p>
+        </div>
+        <div class="flex items-start gap-2">
+          <i class="ph-bold ph-truck text-brand-teal text-base shrink-0 mt-0.5"></i>
+          <p><strong class="text-white">Free Doorstep Pickup:</strong> Our courier partners (Delhivery / BlueDart) will pick up from your pincode address free of charge.</p>
+        </div>
+      </div>
+
+      <button onclick="closeReturnPolicyModal()" class="w-full mt-5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-2.5 rounded-xl transition-all">
+        Understood & Close
+      </button>
+    </div>
+  </div>
+
+  <!-- SLIDE-OVER CHECKOUT DRAWER -->
+  <div id="cart-drawer-overlay" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm transition-opacity"></div>
+  <div id="cart-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[#1a162b] border-l border-slate-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    
+    <!-- Cart Header -->
+    <div class="p-4 border-b border-slate-700 flex items-center justify-between bg-[#141024]">
+      <div class="flex items-center gap-2">
+        <i class="ph-bold ph-shopping-cart text-brand-teal text-xl"></i>
+        <h3 class="font-bold text-white text-base">Shopping Cart</h3>
+        <span id="drawer-cart-count" class="bg-brand-purple text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+      </div>
+      <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white p-1">
+        <i class="ph-bold ph-x text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Pincode Banner inside Cart -->
+    <div class="bg-[#211a38] px-4 py-2.5 border-b border-slate-700 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2 text-slate-300">
+        <i class="ph-bold ph-map-pin text-brand-teal"></i>
+        <span>Ship to: <strong id="cart-pincode-label" class="text-white">500001</strong> (<span id="cart-area-label" class="text-brand-teal">Hyderabad</span>)</span>
+      </div>
+      <button onclick="openPincodeModal()" class="text-brand-purple hover:underline font-semibold">Change</button>
+    </div>
+
+    <!-- Cart Items List -->
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <!-- Dynamic Cart Items -->
+    </div>
+
+    <!-- Cart Footer & Checkout Panel -->
+    <div id="cart-footer" class="border-t border-slate-700 p-4 bg-[#141024] space-y-3">
+      <div class="space-y-1 text-xs">
+        <div class="flex justify-between text-slate-400">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="text-slate-200 font-semibold">₹0</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Delivery Fee (<span id="cart-delivery-area">Hyderabad</span>)</span>
+          <span class="text-emerald-400 font-bold">FREE</span>
+        </div>
+        <div class="flex justify-between text-slate-100 font-bold text-sm pt-2 border-t border-slate-800">
+          <span>Total Payable</span>
+          <span id="cart-total-payable" class="text-brand-teal text-base">₹0</span>
+        </div>
+      </div>
+
+      <!-- Payment Method Selector -->
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase">Select Payment Mode:</label>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <label class="cursor-pointer bg-[#1e1b2e] hover:bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
+            <input type="radio" name="payment-method" value="UPI" checked class="text-brand-teal">
+            <span class="font-medium text-white">UPI / QR Code</span>
+          </label>
+          <label class="cursor-pointer bg-[#1e1b2e] hover:bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
+            <input type="radio" name="payment-method" value="COD" class="text-brand-teal">
+            <span class="font-medium text-white">Cash on Delivery</span>
+          </label>
+          <label class="cursor-pointer bg-[#1e1b2e] hover:bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
+            <input type="radio" name="payment-method" value="CARD" class="text-brand-teal">
+            <span class="font-medium text-white">Debit/Credit Card</span>
+          </label>
+          <label class="cursor-pointer bg-[#1e1b2e] hover:bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
+            <input type="radio" name="payment-method" value="NETBANKING" class="text-brand-teal">
+            <span class="font-medium text-white">Net Banking</span>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="processCheckout()" id="checkout-btn" class="w-full bg-gradient-to-r from-brand-teal to-emerald-500 hover:from-emerald-500 hover:to-brand-teal text-slate-950 font-extrabold text-sm py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+        Place Order & Pay <i class="ph-bold ph-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Firebase JS SDK Imports -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      signInAnonymously, 
+      signInWithCustomToken, 
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      setDoc, 
+      updateDoc, 
+      arrayUnion, 
+      arrayRemove, 
+      onSnapshot, 
+      collection, 
+      addDoc, 
+      query 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global Environment Injection setup
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'mrudula-store-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' 
+      ? JSON.parse(__firebase_config) 
+      : {
+          apiKey: "AIzaSyDummyKeyForFallbackOnly",
+          authDomain: "mrudula-store.firebaseapp.com",
+          projectId: "mrudula-store",
+          storageBucket: "mrudula-store.appspot.com",
+          messagingSenderId: "123456789",
+          appId: "1:123456789:web:abcdef123456"
+        };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Make Auth & DB handles accessible to UI state logic safely
+    window.FB_AUTH = auth;
+    window.FB_DB = db;
+    window.APP_ID = appId;
+
+    // Local Memory State
+    window.state = {
+      user: null, // Logged in user object
+      userProfile: null, // Firestore profile data
+      currentPincode: "500001",
+      currentArea: "Hyderabad, Telangana",
+      estimatedDeliveryDays: 3,
+      cart: [],
+      wishlist: [],
+      orders: [],
+      activeCategory: "All",
+      searchQuery: "",
+      sortBy: "featured"
+    };
+
+    // --- PRODUCTS DATABASE (Sample Inventory) ---
+    window.PRODUCTS = [
+      {
+        id: "p1",
+        name: "Sony WH-1000XM5 Wireless Headphones",
+        category: "Audio",
+        price: 26990,
+        originalPrice: 34990,
+        rating: 4.8,
+        reviewsCount: 342,
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+        description: "Industry-leading noise cancellation with two processors and 8 microphones. Up to 30-hour battery life.",
+        specs: ["Active Noise Cancellation", "30H Battery", "Multipoint Connect"],
+        reviews: [
+          { name: "Rahul S.", rating: 5, date: "2 days ago", comment: "Delivered to Guntur in 2 days! Noise cancelling is mindblowing." },
+          { name: "Ananya K.", rating: 4, date: "1 week ago", comment: "Great bass and premium build quality." }
+        ]
+      },
+      {
+        id: "p2",
+        name: "Apple MacBook Air M3 (16GB, 512GB SSD)",
+        category: "Laptops",
+        price: 124900,
+        originalPrice: 134900,
+        rating: 4.9,
+        reviewsCount: 512,
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80",
+        description: "Supercharged by the next-generation M3 chip. Unbelievably thin and fast with up to 18 hours of battery life.",
+        specs: ["M3 8-Core CPU", "16GB Unified RAM", "512GB Liquid Retina Display"],
+        reviews: [
+          { name: "Vikram R.", rating: 5, date: "3 days ago", comment: "Unbeatable battery performance. Delivered safe and sound." }
+        ]
+      },
+      {
+        id: "p3",
+        name: "Samsung Galaxy S24 Ultra 5G (12GB / 256GB)",
+        category: "Mobiles",
+        price: 129999,
+        originalPrice: 139999,
+        rating: 4.7,
+        reviewsCount: 890,
+        image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80",
+        description: "Galaxy AI is here. Epic 200MP camera system, built-in S Pen, and Titanium frame.",
+        specs: ["Snapdragon 8 Gen 3", "200MP Camera", "S-Pen Included"],
+        reviews: [
+          { name: "Priya V.", rating: 5, date: "Yesterday", comment: "Camera zoom is unbelievable! AI photo features work great." }
+        ]
+      },
+      {
+        id: "p4",
+        name: "Apple Watch Series 9 GPS 45mm",
+        category: "Wearables",
+        price: 41900,
+        originalPrice: 44900,
+        rating: 4.6,
+        reviewsCount: 210,
+        image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80",
+        description: "S9 SiP enables a super bright display and a magic new double tap gesture.",
+        specs: ["Double Tap Gesture", "ECG & Blood Oxygen", "Always-On Retina"],
+        reviews: [
+          { name: "Suresh M.", rating: 4, date: "4 days ago", comment: "Sleek look and excellent health tracking." }
+        ]
+      },
+      {
+        id: "p5",
+        name: "PlayStation 5 Console (Slim Disc Edition)",
+        category: "Gaming",
+        price: 54990,
+        originalPrice: 59990,
+        rating: 4.9,
+        reviewsCount: 1240,
+        image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=600&q=80",
+        description: "Experience lightning-fast loading with an ultra-high speed SSD and immersive DualSense haptics.",
+        specs: ["1TB Custom SSD", "4K 120Hz Gaming", "DualSense Controller"],
+        reviews: [
+          { name: "Karthik N.", rating: 5, date: "5 days ago", comment: "Fastest delivery to Bangalore! God of War looks insane." }
+        ]
+      },
+      {
+        id: "p6",
+        name: "Anker 65W GaN Fast Charger 3-Port",
+        category: "Accessories",
+        price: 3499,
+        originalPrice: 4999,
+        rating: 4.5,
+        reviewsCount: 180,
+        image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80",
+        description: "Charge laptop, tablet, and phone simultaneously with compact high-efficiency GaN tech.",
+        specs: ["65W Max Output", "2x USB-C + 1x USB-A", "Foldable Plug"],
+        reviews: [
+          { name: "Deepak T.", rating: 5, date: "3 weeks ago", comment: "Essential travel accessory." }
+        ]
+      }
+    ];
+
+    // --- FALLBACK INDIAN PINCODE DATABASE ---
+    window.PINCODE_FALLBACK = {
+      "500001": { area: "Hyderabad, Telangana", days: 2 },
+      "110001": { area: "Connaught Place, New Delhi", days: 3 },
+      "400001": { area: "Fort, Mumbai, Maharashtra", days: 3 },
+      "560001": { area: "MG Road, Bengaluru, Karnataka", days: 2 },
+      "600001": { area: "George Town, Chennai, TN", days: 3 },
+      "700001": { area: "BBD Bagh, Kolkata, WB", days: 4 },
+      "522001": { area: "Guntur, Andhra Pradesh", days: 2 },
+      "530001": { area: "Visakhapatnam, Andhra Pradesh", days: 2 },
+      "380001": { area: "Ahmedabad, Gujarat", days: 3 }
+    };
+
+    // --- STREAMING_CHUNK:Firebase Authentication & Listener Setup... ---
+    // Initialize Auth state monitoring
+    async function initFirebase() {
+      // Check if custom token or sign in anonymously first
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.warn("Auth init note:", err);
+      }
+
+      // Listen for Auth changes
+      onAuthStateChanged(auth, async (user) => {
+        window.state.user = user;
+        updateAuthUI();
+
+        if (user && !user.isAnonymous) {
+          // Sync user profile & DB data from Firestore
+          listenToUserProfile(user.uid);
+        } else {
+          window.state.userProfile = null;
+          window.state.wishlist = [];
+          window.state.orders = [];
+          renderProducts();
+          updateBadges();
+        }
+      });
+    }
+
+    // Firestore user sync listener (RULE 1 strictly applied)
+    function listenToUserProfile(userId) {
+      const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'profile', 'data');
+      
+      onSnapshot(userDocRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          window.state.userProfile = data;
+          window.state.wishlist = data.wishlist || [];
+          window.state.cart = data.cart || window.state.cart;
+          window.state.orders = data.orders || [];
+          updateAuthUI();
+          updateBadges();
+          renderProducts();
+        } else {
+          // Initialize user document if not existing
+          const initialData = {
+            email: auth.currentUser?.email || '',
+            name: auth.currentUser?.displayName || 'Valued Customer',
+            wishlist: [],
+            cart: [],
+            orders: [],
+            createdAt: new Date().toISOString()
+          };
+          setDoc(userDocRef, initialData).catch(e => console.error(e));
+        }
+      }, (error) => {
+        console.error("User profile snapshot error:", error);
+      });
+    }
+
+    // Initialize on window ready
+    window.addEventListener('DOMContentLoaded', () => {
+      initFirebase();
+      renderProducts();
+      updateBadges();
+      updateAuthUI();
+      // Run initial pincode estimate setup
+      lookupIndianPincode("500001", false);
+    });
+
+    // Make functions globally available to inline HTML triggers
+    window.lookupIndianPincode = lookupIndianPincode;
+    window.filterCategory = filterCategory;
+    window.handleSearchInput = handleSearchInput;
+    window.showSearchDropdown = showSearchDropdown;
+    window.clearSearch = clearSearch;
+    window.handleSortChange = handleSortChange;
+    window.openPincodeModal = openPincodeModal;
+    window.closePincodeModal = closePincodeModal;
+    window.checkPincodeFromModal = checkPincodeFromModal;
+    window.setQuickPincode = setQuickPincode;
+    window.applyPincodeSelection = applyPincodeSelection;
+    window.openAuthModal = openAuthModal;
+    window.closeAuthModal = closeAuthModal;
+    window.switchAuthTab = switchAuthTab;
+    window.handleLoginSubmit = handleLoginSubmit;
+    window.handleRegisterSubmit = handleRegisterSubmit;
+    window.handleLogout = handleLogout;
+    window.openProductDetailModal = openProductDetailModal;
+    window.closeProductDetailModal = closeProductDetailModal;
+    window.toggleWishlist = toggleWishlist;
+    window.handleWishlistClick = handleWishlistClick;
+    window.addToCart = addToCart;
+    window.toggleCartDrawer = toggleCartDrawer;
+    window.updateCartQty = updateCartQty;
+    window.removeFromCart = removeFromCart;
+    window.processCheckout = processCheckout;
+    window.handleProtectedAction = handleProtectedAction;
+    window.openOrdersModal = openOrdersModal;
+    window.closeOrdersModal = closeOrdersModal;
+    window.submitReview = submitReview;
+    window.openReturnPolicyModal = openReturnPolicyModal;
+    window.closeReturnPolicyModal = closeReturnPolicyModal;
+
+    // --- STREAMING_CHUNK:Pincode Lookup Logic (API + Fallback)... ---
+    async function lookupIndianPincode(pincode, showToastOnSuccess = true) {
+      if (!/^\d{6}$/.test(pincode)) {
+        return { success: false, message: "Please enter a valid 6-digit Indian PIN code." };
+      }
+
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = await response.json();
+
+        if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice?.length > 0) {
+          const po = data[0].PostOffice[0];
+          const areaName = `${po.Name || po.District}, ${po.State}`;
+          
+          window.state.currentPincode = pincode;
+          window.state.currentArea = areaName;
+          window.state.estimatedDeliveryDays = 3;
+
+          updatePincodeDisplay();
+          if (showToastOnSuccess) {
+            showToast(`Location set to ${areaName}`, 'success');
+          }
+          return { success: true, area: areaName };
+        } else {
+          throw new Error("Pincode not found in Post API");
+        }
+      } catch (err) {
+        // Fallback to client-side database
+        if (window.PINCODE_FALLBACK[pincode]) {
+          const item = window.PINCODE_FALLBACK[pincode];
+          window.state.currentPincode = pincode;
+          window.state.currentArea = item.area;
+          window.state.estimatedDeliveryDays = item.days;
+          updatePincodeDisplay();
+          if (showToastOnSuccess) showToast(`Location set to ${item.area}`, 'success');
+          return { success: true, area: item.area };
+        } else {
+          // Default generic Indian city estimate if valid 6-digit
+          const genericArea = `District Center (${pincode}), India`;
+          window.state.currentPincode = pincode;
+          window.state.currentArea = genericArea;
+          window.state.estimatedDeliveryDays = 4;
+          updatePincodeDisplay();
+          if (showToastOnSuccess) showToast(`Serviced area identified for PIN ${pincode}`, 'info');
+          return { success: true, area: genericArea };
+        }
+      }
+    }
+
+    function updatePincodeDisplay() {
+      const pin = window.state.currentPincode;
+      const area = window.state.currentArea;
+
+      document.getElementById('current-pincode-display').innerText = pin;
+      document.getElementById('current-area-display').innerText = area;
+      document.getElementById('active-pincode-sub').innerText = pin;
+      
+      const cartPin = document.getElementById('cart-pincode-label');
+      if (cartPin) cartPin.innerText = pin;
+      const cartArea = document.getElementById('cart-area-label');
+      if (cartArea) cartArea.innerText = area.split(',')[0];
+      const cartDelivArea = document.getElementById('cart-delivery-area');
+      if (cartDelivArea) cartDelivArea.innerText = area.split(',')[0];
+
+      // Update hero delivery string
+      const heroEst = document.getElementById('hero-pincode-est');
+      if (heroEst) heroEst.innerText = `Delivering to ${area.split(',')[0]} by ${getEstimatedDeliveryDateStr()}`;
+
+      // Refresh product grid to sync delivery tags
+      renderProducts();
+    }
+
+    function getEstimatedDeliveryDateStr() {
+      const d = new Date();
+      d.setDate(d.getDate() + window.state.estimatedDeliveryDays);
+      return d.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    // --- STREAMING_CHUNK:Pincode Modal & Controller Handlers... ---
+    function openPincodeModal() {
+      const modal = document.getElementById('pincode-modal');
+      modal.classList.remove('hidden');
+      document.getElementById('modal-pincode-input').value = window.state.currentPincode;
+      document.getElementById('modal-pincode-result').classList.add('hidden');
+      document.getElementById('pincode-modal-status').innerText = '';
+    }
+
+    function closePincodeModal() {
+      document.getElementById('pincode-modal').classList.add('hidden');
+    }
+
+    async function checkPincodeFromModal() {
+      const input = document.getElementById('modal-pincode-input').value.trim();
+      const statusText = document.getElementById('pincode-modal-status');
+      statusText.innerText = "Checking Indian Postal Database...";
+      statusText.className = "text-xs mt-2 font-medium text-brand-teal";
+
+      const res = await lookupIndianPincode(input, false);
+      if (res.success) {
+        statusText.innerText = "";
+        const resCard = document.getElementById('modal-pincode-result');
+        resCard.classList.remove('hidden');
+        document.getElementById('modal-detected-area').innerText = res.area;
+        document.getElementById('modal-detected-delivery').innerText = `✓ Ships via Express Courier • Delivery by ${getEstimatedDeliveryDateStr()}`;
+      } else {
+        statusText.innerText = res.message || "Invalid Pincode";
+        statusText.className = "text-xs mt-2 font-medium text-rose-400";
+        document.getElementById('modal-pincode-result').classList.add('hidden');
+      }
+    }
+
+    function setQuickPincode(code) {
+      document.getElementById('modal-pincode-input').value = code;
+      checkPincodeFromModal();
+    }
+
+    function applyPincodeSelection() {
+      const input = document.getElementById('modal-pincode-input').value.trim();
+      lookupIndianPincode(input, true);
+      closePincodeModal();
+    }
+
+    // --- STREAMING_CHUNK:Authentication Handlers (Firebase Auth & Firestore Profile)... ---
+    function openAuthModal(tab = 'login') {
+      switchAuthTab(tab);
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const regForm = document.getElementById('register-form');
+      const loginBtn = document.getElementById('tab-login-btn');
+      const regBtn = document.getElementById('tab-register-btn');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+        loginBtn.className = "flex-1 py-2.5 text-center font-bold text-sm border-b-2 border-brand-teal text-brand-teal transition-all";
+        regBtn.className = "flex-1 py-2.5 text-center font-bold text-sm text-slate-400 hover:text-slate-200 transition-all";
+      } else {
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        regBtn.className = "flex-1 py-2.5 text-center font-bold text-sm border-b-2 border-brand-teal text-brand-teal transition-all";
+        loginBtn.className = "flex-1 py-2.5 text-center font-bold text-sm text-slate-400 hover:text-slate-200 transition-all";
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+      const submitBtn = document.getElementById('login-submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Authenticating...";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast("Signed in successfully!", "success");
+        closeAuthModal();
+      } catch (error) {
+        showToast(error.message || "Failed to log in. Please check credentials.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Sign In to MrudulaStore";
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const phone = document.getElementById('reg-phone').value;
+      const pass = document.getElementById('reg-password').value;
+      const submitBtn = document.getElementById('register-submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Creating Profile...";
+
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        const u = userCred.user;
+
+        // Save User Profile in Firestore Database
+        const userDocRef = doc(db, 'artifacts', appId, 'users', u.uid, 'profile', 'data');
+        await setDoc(userDocRef, {
+          name: name,
+          email: email,
+          phone: phone,
+          wishlist: window.state.wishlist || [],
+          cart: window.state.cart || [],
+          orders: [],
+          createdAt: new Date().toISOString()
+        });
+
+        showToast("Registration successful! Welcome to MrudulaStore.", "success");
+        closeAuthModal();
+      } catch (error) {
+        showToast(error.message || "Registration failed.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Register & Create Database Profile";
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await signOut(auth);
+        await signInAnonymously(auth); // Fallback to anonymous guest session
+        showToast("Logged out successfully.", "info");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function updateAuthUI() {
+      const container = document.getElementById('auth-section');
+      const user = window.state.user;
+      const isRegistered = user && !user.isAnonymous;
+
+      if (isRegistered) {
+        const displayName = window.state.userProfile?.name || user.email?.split('@')[0] || "User";
+        container.innerHTML = `
+          <div class="relative group">
+            <button class="flex items-center gap-2 bg-[#221c38] hover:bg-[#2b2447] border border-slate-700 px-3 py-1.5 rounded-full transition-all text-xs font-semibold text-white">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-brand-purple to-brand-teal text-slate-950 flex items-center justify-center font-bold text-xs uppercase">
+                ${displayName.charAt(0)}
+              </div>
+              <span class="max-w-[100px] truncate hidden sm:inline">${displayName}</span>
+              <i class="ph-bold ph-caret-down text-slate-400"></i>
+            </button>
+            
+            <div class="hidden group-hover:block absolute right-0 mt-1 w-48 bg-[#1a162b] border border-slate-700 rounded-2xl shadow-2xl z-50 p-2 space-y-1">
+              <div class="px-3 py-2 border-b border-slate-800">
+                <p class="text-xs font-bold text-white truncate">${displayName}</p>
+                <p class="text-[10px] text-slate-400 truncate">${user.email}</p>
+              </div>
+              <button onclick="openOrdersModal()" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors">
+                <i class="ph-bold ph-package text-brand-teal"></i> My Orders & Tracking
+              </button>
+              <button onclick="handleWishlistClick()" class="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors">
+                <i class="ph-bold ph-heart text-brand-accent"></i> My Wishlist
+              </button>
+              <button onclick="handleLogout()" class="w-full text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-950/40 rounded-xl flex items-center gap-2 transition-colors">
+                <i class="ph-bold ph-sign-out"></i> Logout
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button onclick="openAuthModal('login')" class="bg-gradient-to-r from-brand-purple to-purple-700 hover:from-purple-600 hover:to-brand-purple text-white text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all flex items-center gap-1.5">
+            <i class="ph-bold ph-user-circle text-base"></i> Sign In
+          </button>
+        `;
+      }
+    }
+
+    // Protection Guard Helper
+    function handleProtectedAction(actionCallback) {
+      const u = window.state.user;
+      if (!u || u.isAnonymous) {
+        showToast("Please Sign In to access your orders and profile.", "info");
+        openAuthModal('login');
+        return false;
+      }
+      actionCallback();
+      return true;
+    }
+
+    // --- STREAMING_CHUNK:Product Rendering, Search & Filtering Logic... ---
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      const emptyState = document.getElementById('empty-products');
+      let list = [...window.PRODUCTS];
+
+      // Filter by category
+      if (window.state.activeCategory !== 'All') {
+        list = list.filter(p => p.category === window.state.activeCategory);
+      }
+
+      // Filter by search query
+      if (window.state.searchQuery.trim() !== '') {
+        const q = window.state.searchQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+      }
+
+      // Sort
+      if (window.state.sortBy === 'low-high') {
+        list.sort((a,b) => a.price - b.price);
+      } else if (window.state.sortBy === 'high-low') {
+        list.sort((a,b) => b.price - a.price);
+      } else if (window.state.sortBy === 'rating') {
+        list.sort((a,b) => b.rating - a.rating);
+      }
+
+      if (list.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      const delivDateStr = getEstimatedDeliveryDateStr();
+
+      grid.innerHTML = list.map(p => {
+        const isWishlisted = window.state.wishlist.includes(p.id);
+        return `
+          <div class="glass-card rounded-2xl overflow-hidden flex flex-col group hover:border-brand-teal/50 transition-all duration-300 hover:-translate-y-1 shadow-lg">
+            
+            <!-- Image & Badges -->
+            <div class="relative h-48 bg-[#151226] overflow-hidden cursor-pointer" onclick="openProductDetailModal('${p.id}')">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute top-2.5 left-2.5 bg-brand-deep/80 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-brand-teal border border-brand-teal/30">
+                ${p.category}
+              </div>
+              <button onclick="event.stopPropagation(); toggleWishlist('${p.id}')" class="absolute top-2.5 right-2.5 p-2 rounded-full bg-slate-900/80 backdrop-blur-md text-slate-300 hover:text-brand-accent transition-all">
+                <i class="${isWishlisted ? 'ph-fill ph-heart text-brand-accent' : 'ph-bold ph-heart'} text-lg"></i>
+              </button>
+            </div>
+
+            <!-- Product Details -->
+            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center gap-1 text-amber-400 text-xs font-bold mb-1">
+                  <i class="ph-fill ph-star"></i>
+                  <span>${p.rating}</span>
+                  <span class="text-slate-500 font-normal">(${p.reviewsCount})</span>
+                </div>
+                <h3 onclick="openProductDetailModal('${p.id}')" class="font-bold text-sm text-white hover:text-brand-teal cursor-pointer line-clamp-2 transition-colors">
+                  ${p.name}
+                </h3>
+              </div>
+
+              <!-- Pincode Delivery Tag -->
+              <div class="bg-[#151126] p-2 rounded-xl border border-slate-800 text-[11px] flex items-center justify-between text-slate-300">
+                <span class="flex items-center gap-1">
+                  <i class="ph-bold ph-truck text-brand-teal"></i> Delivery by:
+                </span>
+                <span class="font-bold text-brand-teal">${delivDateStr}</span>
+              </div>
+
+              <!-- Price & Add Button -->
+              <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                <div>
+                  <span class="text-xs text-slate-500 line-through">₹${p.originalPrice.toLocaleString('en-IN')}</span>
+                  <p class="text-base font-extrabold text-white">₹${p.price.toLocaleString('en-IN')}</p>
+                </div>
+                <button onclick="addToCart('${p.id}')" class="bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-brand-purple text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1">
+                  <i class="ph-bold ph-shopping-bag"></i> Add
+                </button>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterCategory(cat) {
+      window.state.activeCategory = cat;
+      const pills = document.querySelectorAll('.cat-pill');
+      pills.forEach(p => {
+        if (p.innerText.includes(cat) || (cat === 'All' && p.innerText.includes('All'))) {
+          p.className = "cat-pill active-cat text-xs px-4 py-1.5 rounded-full font-medium transition-all bg-brand-purple text-white shadow-md";
+        } else {
+          p.className = "cat-pill text-xs px-4 py-1.5 rounded-full font-medium text-slate-300 hover:bg-slate-800 transition-all";
+        }
+      });
+      document.getElementById('section-title').innerText = cat === 'All' ? 'Trending Electronics' : `${cat} Collection`;
+      renderProducts();
+    }
+
+    function handleSearchInput(e) {
+      window.state.searchQuery = e.target.value;
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (e.target.value.trim().length > 0) {
+        if (clearBtn) clearBtn.classList.remove('hidden');
+        showSearchDropdown();
+      } else {
+        if (clearBtn) clearBtn.classList.add('hidden');
+        hideSearchDropdown();
+      }
+      renderProducts();
+    }
+
+    function showSearchDropdown() {
+      const q = window.state.searchQuery.trim().toLowerCase();
+      const dropdown = document.getElementById('search-dropdown');
+      if (!dropdown || q.length === 0) return;
+
+      const matches = window.PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      if (matches.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      dropdown.innerHTML = matches.map(m => `
+        <div onclick="openProductDetailModal('${m.id}'); hideSearchDropdown()" class="p-3 hover:bg-slate-800/80 cursor-pointer flex items-center gap-3 transition-colors">
+          <img src="${m.image}" class="w-10 h-10 object-cover rounded-lg">
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-white truncate">${m.name}</p>
+            <p class="text-[10px] text-brand-teal font-medium">₹${m.price.toLocaleString('en-IN')}</p>
+          </div>
+        </div>
+      `).join('');
+      dropdown.classList.remove('hidden');
+    }
+
+    function hideSearchDropdown() {
+      const dropdown = document.getElementById('search-dropdown');
+      if (dropdown) dropdown.classList.add('hidden');
+    }
+
+    function clearSearch() {
+      window.state.searchQuery = "";
+      const input = document.getElementById('search-input');
+      if (input) input.value = "";
+      const mInput = document.getElementById('mobile-search-input');
+      if (mInput) mInput.value = "";
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      hideSearchDropdown();
+      renderProducts();
+    }
+
+    function handleSortChange(e) {
+      window.state.sortBy = e.target.value;
+      renderProducts();
+    }
+
+    // --- STREAMING_CHUNK:Product Detail Modal & Review Engine... ---
+    function openProductDetailModal(id) {
+      const p = window.PRODUCTS.find(item => item.id === id);
+      if (!p) return;
+
+      const modal = document.getElementById('product-detail-modal');
+      const container = document.getElementById('product-modal-content');
+      const delivDateStr = getEstimatedDeliveryDateStr();
+
+      const user = window.state.user;
+      const isRegistered = user && !user.isAnonymous;
+
+      container.innerHTML = `
+        <button onclick="closeProductDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 z-10">
+          <i class="ph-bold ph-x text-xl"></i>
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="rounded-2xl overflow-hidden bg-[#120f24] border border-slate-800 relative h-64 md:h-80">
+            <img src="${p.image}" class="w-full h-full object-cover">
+            <div class="absolute bottom-3 left-3 bg-brand-deep/90 border border-brand-teal/40 px-3 py-1 rounded-full text-xs text-brand-teal font-bold">
+              ${p.category}
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <div class="flex items-center gap-1.5 text-amber-400 text-xs font-bold mb-1">
+                <i class="ph-fill ph-star text-sm"></i>
+                <span>${p.rating} / 5.0</span>
+                <span class="text-slate-400 font-normal">(${p.reviewsCount} customer reviews)</span>
+              </div>
+              <h2 class="text-xl font-bold text-white">${p.name}</h2>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed">${p.description}</p>
+            </div>
+
+            <!-- Interactive Delivery Widget inside detail -->
+            <div class="bg-[#120f24] p-3.5 rounded-2xl border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 flex items-center gap-1">
+                  <i class="ph-bold ph-map-pin text-brand-teal"></i> Check Area Delivery:
+                </span>
+                <button onclick="openPincodeModal()" class="text-brand-purple font-semibold hover:underline">Change PIN</button>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white text-sm font-mono">${window.state.currentPincode}</span>
+                <span class="text-xs text-slate-300">(${window.state.currentArea})</span>
+              </div>
+              <p class="text-xs font-bold text-brand-teal flex items-center gap-1">
+                <i class="ph-bold ph-truck"></i> Express Delivery by ${delivDateStr}
+              </p>
+            </div>
+
+            <!-- Price & Buy actions -->
+            <div class="flex items-center justify-between pt-2">
+              <div>
+                <span class="text-xs text-slate-500 line-through">MRP: ₹${p.originalPrice.toLocaleString('en-IN')}</span>
+                <p class="text-2xl font-black text-white">₹${p.price.toLocaleString('en-IN')}</p>
+              </div>
+              <button onclick="addToCart('${p.id}'); closeProductDetailModal(); toggleCartDrawer()" class="bg-gradient-to-r from-brand-teal to-emerald-500 text-slate-950 font-extrabold px-6 py-3 rounded-xl shadow-lg hover:brightness-110 transition-all text-xs flex items-center gap-2">
+                <i class="ph-bold ph-lightning"></i> Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="mt-8 border-t border-slate-800 pt-6">
+          <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <i class="ph-bold ph-chat-centered-text text-brand-purple"></i> Customer Reviews & Ratings
+          </h3>
+
+          <!-- Write Review Form -->
+          <div class="bg-[#120f24] p-4 rounded-2xl border border-slate-800 mb-6">
+            ${isRegistered ? `
+              <h4 class="text-xs font-bold text-white mb-2">Write a Verified Review</h4>
+              <form onsubmit="submitReview(event, '${p.id}')" class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <label class="text-xs text-slate-300">Rating:</label>
+                  <select id="review-rating-input" class="bg-[#1a162b] text-white text-xs border border-slate-700 rounded-lg px-2 py-1">
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                    <option value="3">⭐⭐⭐ (3/5)</option>
+                  </select>
+                </div>
+                <textarea id="review-comment-input" required rows="2" placeholder="Share your experience regarding delivery and product quality..." 
+                  class="w-full bg-[#1a162b] text-white p-2.5 rounded-xl border border-slate-700 text-xs focus:outline-none focus:border-brand-teal"></textarea>
+                <button type="submit" class="bg-brand-purple hover:bg-purple-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">
+                  Submit Review
+                </button>
+              </form>
+            ` : `
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400">Sign in to leave a verified rating & review for this item.</span>
+                <button onclick="openAuthModal('login')" class="text-brand-teal hover:underline font-bold">Sign In</button>
+              </div>
+            `}
+          </div>
+
+          <!-- Existing Reviews List -->
+          <div class="space-y-3 max-h-48 overflow-y-auto">
+            ${p.reviews.map(r => `
+              <div class="bg-[#120f24] p-3 rounded-xl border border-slate-800 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-slate-200 flex items-center gap-1">
+                    ${r.name} <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-1.5 py-0.2 rounded">Verified Purchase</span>
+                  </span>
+                  <span class="text-slate-500 text-[10px]">${r.date}</span>
+                </div>
+                <div class="text-amber-400 mb-1">
+                  ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
+                </div>
+                <p class="text-slate-300 leading-normal">${r.comment}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeProductDetailModal() {
+      document.getElementById('product-detail-modal').classList.add('hidden');
+    }
+
+    async function submitReview(e, productId) {
+      e.preventDefault();
+      const rating = parseInt(document.getElementById('review-rating-input').value);
+      const comment = document.getElementById('review-comment-input').value.trim();
+      const p = window.PRODUCTS.find(item => item.id === productId);
+
+      if (!p || !comment) return;
+
+      const userName = window.state.userProfile?.name || "Verified Customer";
+      const newReview = {
+        name: userName,
+        rating: rating,
+        date: "Just now",
+        comment: comment
+      };
+
+      p.reviews.unshift(newReview);
+      p.reviewsCount += 1;
+      showToast("Thank you! Your review has been recorded.", "success");
+      openProductDetailModal(productId);
+    }
+
+    // --- STREAMING_CHUNK:Wishlist, Cart & Realtime Persistence Engine... ---
+    async function toggleWishlist(productId) {
+      let wishlist = window.state.wishlist;
+      const index = wishlist.indexOf(productId);
+
+      if (index > -1) {
+        wishlist.splice(index, 1);
+        showToast("Removed from Wishlist", "info");
+      } else {
+        wishlist.push(productId);
+        showToast("Added to Wishlist!", "success");
+      }
+
+      window.state.wishlist = wishlist;
+      updateBadges();
+      renderProducts();
+
+      // Persist to Firestore if logged in
+      const user = window.state.user;
+      if (user && !user.isAnonymous) {
+        try {
+          const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+          await updateDoc(userDocRef, { wishlist: wishlist });
+        } catch (e) {
+          console.error("Error saving wishlist:", e);
+        }
+      }
+    }
+
+    function handleWishlistClick() {
+      if (window.state.wishlist.length === 0) {
+        showToast("Your Wishlist is empty!", "info");
+        return;
+      }
+      showToast(`You have ${window.state.wishlist.length} item(s) in your Wishlist. Filtered preview active.`, "info");
+    }
+
+    async function addToCart(productId) {
+      const product = window.PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      let cart = window.state.cart;
+      const existing = cart.find(item => item.id === productId);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+
+      window.state.cart = cart;
+      updateBadges();
+      renderCartDrawer();
+      showToast(`Added ${product.name} to Cart`, "success");
+
+      // Persist to Firestore if user logged in
+      const user = window.state.user;
+      if (user && !user.isAnonymous) {
+        try {
+          const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+          await updateDoc(userDocRef, { cart: cart });
+        } catch (e) {
+          console.error("Cart save error:", e);
+        }
+      }
+    }
+
+    function toggleCartDrawer() {
+      const drawer = document.getElementById('cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay');
+
+      if (drawer.classList.contains('translate-x-full')) {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+        renderCartDrawer();
+      } else {
+        drawer.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    function renderCartDrawer() {
+      const container = document.getElementById('cart-items-container');
+      const cart = window.state.cart;
+
+      document.getElementById('drawer-cart-count').innerText = cart.reduce((acc, i) => acc + i.qty, 0);
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-500">
+            <i class="ph-bold ph-shopping-bag-open text-4xl mb-2"></i>
+            <p class="text-xs font-semibold">Your Cart is Empty</p>
+            <button onclick="toggleCartDrawer()" class="mt-3 text-xs text-brand-teal hover:underline font-bold">Start Shopping</button>
+          </div>
+        `;
+        document.getElementById('cart-subtotal').innerText = "₹0";
+        document.getElementById('cart-total-payable').innerText = "₹0";
+        return;
+      }
+
+      let subtotal = 0;
+      container.innerHTML = cart.map(item => {
+        subtotal += item.price * item.qty;
+        return `
+          <div class="bg-[#120f24] p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
+            <img src="${item.image}" class="w-14 h-14 object-cover rounded-xl border border-slate-700">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-white truncate">${item.name}</p>
+              <p class="text-xs font-extrabold text-brand-teal mt-0.5">₹${item.price.toLocaleString('en-IN')}</p>
+              <div class="flex items-center gap-2 mt-2">
+                <button onclick="updateCartQty('${item.id}', -1)" class="w-5 h-5 rounded-md bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs">-</button>
+                <span class="text-xs font-bold text-white">${item.qty}</span>
+                <button onclick="updateCartQty('${item.id}', 1)" class="w-5 h-5 rounded-md bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs">+</button>
+              </div>
+            </div>
+            <button onclick="removeFromCart('${item.id}')" class="text-slate-500 hover:text-rose-400 p-1">
+              <i class="ph-bold ph-trash text-base"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cart-subtotal').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+      document.getElementById('cart-total-payable').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+    }
+
+    function updateCartQty(id, delta) {
+      let cart = window.state.cart;
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          cart = cart.filter(i => i.id !== id);
+        }
+      }
+      window.state.cart = cart;
+      updateBadges();
+      renderCartDrawer();
+    }
+
+    function removeFromCart(id) {
+      window.state.cart = window.state.cart.filter(i => i.id !== id);
+      updateBadges();
+      renderCartDrawer();
+    }
+
+    function updateBadges() {
+      const cartCount = window.state.cart.reduce((acc, i) => acc + i.qty, 0);
+      document.getElementById('cart-count-badge').innerText = cartCount;
+
+      const wishBadge = document.getElementById('wishlist-badge');
+      if (window.state.wishlist.length > 0) {
+        wishBadge.innerText = window.state.wishlist.length;
+        wishBadge.classList.remove('hidden');
+      } else {
+        wishBadge.classList.add('hidden');
+      }
+    }
+
+    // --- STREAMING_CHUNK:Checkout & Orders DB Persistence Handlers... ---
+    async function processCheckout() {
+      if (window.state.cart.length === 0) {
+        showToast("Your cart is empty!", "error");
+        return;
+      }
+
+      // Check if logged in (Strict Protection Rule)
+      const user = window.state.user;
+      if (!user || user.isAnonymous) {
+        showToast("Please Sign In to place your order.", "info");
+        openAuthModal('login');
+        return;
+      }
+
+      const selectedPayment = document.querySelector('input[name="payment-method"]:checked')?.value || "UPI";
+      const totalAmount = window.state.cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+      const orderData = {
+        orderId: `MS-${Math.floor(100000 + Math.random() * 900000)}`,
+        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        items: [...window.state.cart],
+        pincode: window.state.currentPincode,
+        area: window.state.currentArea,
+        paymentMethod: selectedPayment,
+        totalAmount: totalAmount,
+        status: "Confirmed & Packing"
+      };
+
+      try {
+        const userDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'data');
+        
+        // Push order into Firestore
+        await updateDoc(userDocRef, {
+          orders: arrayUnion(orderData),
+          cart: []
+        });
+
+        window.state.cart = [];
+        updateBadges();
+        toggleCartDrawer();
+
+        showToast(`🎉 Order ${orderData.orderId} Placed Successfully!`, "success");
+        openOrdersModal();
+      } catch (err) {
+        console.error("Order process error:", err);
+        showToast("Failed to record order. Please try again.", "error");
+      }
+    }
+
+    function openOrdersModal() {
+      handleProtectedAction(() => {
+        const modal = document.getElementById('orders-modal');
+        const container = document.getElementById('orders-list-container');
+        const orders = window.state.orders;
+
+        if (!orders || orders.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-12 text-slate-400">
+              <i class="ph-bold ph-package-open text-4xl mb-2 text-slate-500"></i>
+              <p class="text-sm font-semibold">No orders found in your Firestore Database.</p>
+              <p class="text-xs text-slate-500 mt-1">Place an order to track delivery status.</p>
+            </div>
+          `;
+        } else {
+          container.innerHTML = orders.map(o => `
+            <div class="bg-[#120f24] p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div>
+                  <span class="text-xs text-slate-400">Order ID: <strong class="text-white">${o.orderId}</strong></span>
+                  <p class="text-[10px] text-slate-500">${o.date}</p>
+                </div>
+                <span class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                  ${o.status}
+                </span>
+              </div>
+
+              <div class="space-y-2">
+                ${o.items.map(i => `
+                  <div class="flex items-center gap-3 text-xs">
+                    <img src="${i.image}" class="w-10 h-10 object-cover rounded-lg">
+                    <div class="flex-1">
+                      <p class="font-bold text-white truncate">${i.name}</p>
+                      <p class="text-slate-400 text-[11px]">Qty: ${i.qty} • ₹${i.price.toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+
+              <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800/60">
+                <span class="text-slate-400">Pincode: <strong class="text-slate-200">${o.pincode} (${o.area})</strong></span>
+                <span class="font-bold text-brand-teal">Total: ₹${o.totalAmount.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        modal.classList.remove('hidden');
+      });
+    }
+
+    function closeOrdersModal() {
+      document.getElementById('orders-modal').classList.add('hidden');
+    }
+
+    function openReturnPolicyModal() {
+      document.getElementById('return-modal').classList.remove('hidden');
+    }
+
+    function closeReturnPolicyModal() {
+      document.getElementById('return-modal').classList.add('hidden');
+    }
+
+    // --- STREAMING_CHUNK:Toast Feedback Notification System... ---
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let borderCol = "border-brand-teal text-white";
+      let icon = "ph-info";
+
+      if (type === 'success') {
+        borderCol = "border-emerald-500 text-emerald-300";
+        icon = "ph-check-circle";
+      } else if (type === 'error') {
+        borderCol = "border-rose-500 text-rose-300";
+        icon = "ph-warning-circle";
+      }
+
+      toast.className = `glass-card border-l-4 ${borderCol} p-3.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 max-w-sm transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
+      toast.innerHTML = `<i class="ph-bold ${icon} text-lg"></i> <span>${message}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
